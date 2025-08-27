@@ -1,0 +1,13 @@
+
+
+proxies:
+  group1:
+    description: 国内代理
+    nodes:  
+      - xxx
+  group2:
+    description: 海外代理
+    nodes:
+      - yyy
+
+

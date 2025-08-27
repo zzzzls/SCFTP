@@ -2,26 +2,26 @@ import random
 import orjson
 from loguru import logger
 from mitmproxy import http, ctx
+import yaml
 
-ali_proxy_hosts = {
-    "group1": [
-        "",  # 添加阿里云链接
-    ],
-    "group2": [
-    ]
-}
+
+# todo: 拆分mitmproxy 和 addon 功能
 
 class MitmProxy:
     port = "9067"
+    config_path = "config.yaml"
 
     def __init__(self):
-        self.pgen_cn = self._choice_proxy(ali_proxy_hosts['group1'])
-        self.pgen_en = self._choice_proxy(ali_proxy_hosts['group2'])
+        self.config = self._load_config()
+        self.proxies = self.config['proxies']
+        print(self.proxies)
         
-        # 混合组
-        mix_group = [host for group in ali_proxy_hosts.values() for host in group]
-        random.shuffle(mix_group)
-        self.pgen_all = self._choice_proxy(mix_group)
+        self.proxy_generator = None
+        
+    def _load_config(self):
+        with open(self.config_path, 'r') as f:
+            config = yaml.safe_load(f)
+        return config
         
     def _choice_proxy(self, hosts:list[str]):
         """轮流切换代理"""
@@ -40,7 +40,20 @@ class MitmProxy:
         )
         
     def running(self):
-        print(f"mitmdump is running at 0.0.0.0:{MitmProxy.port} , tunnel_group: {ctx.options.group} ...")
+        group = ctx.options.group
+        
+        # 初始化代理生成器
+        assert group != "ALL" and group not in self.proxies, f"代理组不存在: {group}"
+        if group == "ALL":
+            nodes = [node for group in self.proxies.values() for node in group['nodes']]
+            description = "混合组"
+        else:
+            nodes = self.proxies[group]['nodes']
+            description = self.proxies[group]['description']
+            
+        self.proxy_generator = self._choice_proxy(nodes)
+            
+        logger.info(f"mitmdump is running at 0.0.0.0:{MitmProxy.port} , tunnel_group: {group} [{description}]...")
     
     async def request(self, flow: http.HTTPFlow):
         original_req = {
@@ -50,32 +63,22 @@ class MitmProxy:
             "body": flow.request.content.decode(),
         }
         
-        body = orjson.dumps(original_req)
-        
-        match ctx.options.group.upper():
-            case "EN":
-                proxy = next(self.pgen_cn)
-            case "CN":
-                proxy = next(self.pgen_en)
-            case "ALL":
-                proxy = next(self.pgen_all)
-            case _:
-                proxy = next(self.pgen_all)
-        
+        proxy = next(self.proxy_generator)
         logger.info(f"[Request] {proxy} -> {original_req['url']}")
+        
         flow.request.url = proxy
         flow.request.method = "POST"
         flow.request.headers = http.Headers(
             host=flow.request.host,
             content_type="application/json", 
         )
-        flow.request.content = body
+        flow.request.content = orjson.dumps(original_req)
     
     async def response(self, flow: http.HTTPFlow):
         logger.info(f"[Response] {flow.response}")
 
     async def error(self, flow: http.HTTPFlow):
-        logger.error(f"err, {flow.request.url}")
+        logger.error(f"[Error] {flow.request.url}")
 
 
 addons = [MitmProxy()]
