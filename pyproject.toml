@@ -1,0 +1,7 @@
+[project]
+name = "scftp"
+version = "0.1.0"
+description = "基于云函数的隧道代理 (Tunnel proxy based on Serverless Cloud Function)"
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
