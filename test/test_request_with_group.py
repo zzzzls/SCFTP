@@ -24,4 +24,4 @@ if __name__ == '__main__':
     asyncio.run(test_request_with_group())
     asyncio.run(test_request_with_group(group_name="group1"))
     asyncio.run(test_request_with_group(group_name="group2"))
-    asyncio.run(test_request_with_group(group_name="group3"))
+    asyncio.run(test_request_with_group(group_name="group3"))  # 测试不存在的分组

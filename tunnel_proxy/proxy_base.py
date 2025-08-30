@@ -14,7 +14,7 @@ class ProxyBase(abc.ABC):
         self.default_group = self.config["default_group"]
 
     def reload_proxy(self):
-        logger.info("---> 初始化代理组")
+        logger.info("---> 初始化代理池")
         proxies = self.load_proxy()
         self.groups = self.__init_proxy_group(proxies)
     
@@ -52,7 +52,7 @@ class ProxyBase(abc.ABC):
         for group, info in groups.items():
             nodes = info.get("nodes")
             groups_generated[group] = self.__choice_proxy(nodes)
-            logger.info(f"[{group}] 节点数量:{len(info['nodes'])} [{info['description']}]")
+            logger.info(f"[{group}] nodes-count:{len(info['nodes'])} description:{info['description']}")
         
         return groups_generated
 
