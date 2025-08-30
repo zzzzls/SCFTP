@@ -94,6 +94,6 @@ if __name__ == "__main__":
             MitmProxy.port,
             "-q",
             "--set",
-            "group=ALL"
+            "block_global=false"
         ]
     )
