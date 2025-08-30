@@ -1,14 +1,5 @@
+port: 9042  # 代理服务监听端口
+default_group: ALL
 
-
-proxies:
-  port: 9042  # 代理服务监听端口
-  group1:
-    description: 国内代理
-    nodes:  
-      - xxx
-  group2:
-    description: 海外代理
-    nodes:
-      - yyy
 
 

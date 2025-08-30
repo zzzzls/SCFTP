@@ -1,4 +1,6 @@
 .venv/
+.vscode/
 __pycache__/
 
-.vscode/
+
+proxy_groups.yaml

@@ -1,0 +1,10 @@
+group1:
+  description: 国内代理
+  nodes:  
+    - "http://{host}:{port}"
+    - ...
+group2:
+  description: 海外代理
+  nodes:
+    - "http://{host}:{port}"
+    - ...
