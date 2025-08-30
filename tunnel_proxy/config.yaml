@@ -1,6 +1,7 @@
 
 
 proxies:
+  port: 9042  # 代理服务监听端口
   group1:
     description: 国内代理
     nodes:  
