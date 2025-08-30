@@ -15,7 +15,6 @@
 - **group1**: 国内代理组
 - **group2**: 海外代理组
 - 可继续添加组
-- 
 
 
 ## QuickStart
@@ -63,18 +62,6 @@ response = requests.get(
 )
 print(response.json())
 ```
-
-## Usage
-
-### 配置说明
-
-#### 主配置文件 (`config.yaml`)
-
-```yaml
-port: 9042  # 代理服务监听端口
-default_group: ALL  # 默认代理组
-```
-
 
 ### 注意事项
 
